@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.ImageIcon;
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *
@@ -23,8 +25,10 @@ import javax.swing.JPanel;
 public class GUI extends JFrame {
     private JButton bInicio;
     private BotonesCodigo bCodigo[];
-    private JPanel pOeste, pEste, pBotones, pCentro, pBotonInicio;
+    private JPanel pOeste, pEste, pBotones, pCentro, pBotonInicio, pPuntuacion;
     private JLabel lNivel, lEstado, lPuntuacion, lImagen;
+    private JTextField tfPuntos;
+    private ArrayList<Integer> codigo;
     
     public GUI()
     {
@@ -46,11 +50,14 @@ public class GUI extends JFrame {
         lPuntuacion = new JLabel("Puntuacion: ");
         lImagen = new JLabel(new ImageIcon("src/imagenes/cajaFuerte.png"));
         
+        tfPuntos = new JTextField();
+        
         pEste = new JPanel(new BorderLayout());
         pOeste = new JPanel(new BorderLayout());
         pBotones = new JPanel(new GridLayout(4,3,3,3));
         pCentro = new JPanel(new GridLayout(1,2));
         pBotonInicio = new JPanel(new FlowLayout());
+        pPuntuacion = new JPanel (new GridLayout(1,2));
         
         for (int i =0; i < bCodigo.length; i++)
         {
@@ -74,10 +81,13 @@ public class GUI extends JFrame {
         
         pBotonInicio.add(bInicio);
         
+        pPuntuacion.add(lPuntuacion);
+        pPuntuacion.add(tfPuntos);
+        
         pOeste.add(pBotonInicio, BorderLayout.NORTH);
         pOeste.add(lImagen, BorderLayout.CENTER);
         
-        pEste.add(lPuntuacion, BorderLayout.NORTH);
+        pEste.add(pPuntuacion, BorderLayout.NORTH);
         pEste.add(pBotones, BorderLayout.CENTER);
         
         pCentro.add(pOeste);
@@ -105,7 +115,7 @@ public class GUI extends JFrame {
     }
     
     class ManejaEvento implements ActionListener{
-        int puntos, codigo;
+        int puntos, topeCodigo;
         boolean pulsoBien;
         
 
@@ -113,7 +123,10 @@ public class GUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == bInicio){
                 puntos = 0;
-                codigo = 11;
+                topeCodigo = 11;
+                
+                int aleatorio = (int)(Math.random()*topeCodigo);
+                codigo.add(aleatorio);
                 
                 //desactivar boton iniciar
                 bInicio.setEnabled(false);
@@ -123,16 +136,64 @@ public class GUI extends JFrame {
             } if (e.getSource() == bCodigo){
                 pulsoBien = false;
                 String oprimido = e.getActionCommand();
+                for (int i = 0; i < bCodigo.length; i++){
+                    if (oprimido.equals(bCodigo[i].getText())){
+                        pulsoBien = true;
+                        break;
+                    }
+                }
+                if(pulsoBien){
+                    puntos += 100;
+                    tfPuntos.setText(""+puntos);
+                }
             }
         } //fin actionPerformed
+        
+        public boolean validarJugada (int codigoJugado){
+            for (int i = 0; i < codigo.size(); i++){
+                if (codigo.get(i) == codigoJugado){
+                    try {
+                        if(codigo.get(i) <= 0 && codigo.get(i) < 3){
+                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            Thread.sleep(1000);
+                            bCodigo[i].setBackground(null);
+                            return true;
+                        }if(codigo.get(i) <= 3 && codigo.get(i) < 6){
+                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            Thread.sleep(1000);
+                            bCodigo[i].setBackground(null);
+                            return true;
+                        }if(codigo.get(i) <= 6 && codigo.get(i) < 9){
+                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            Thread.sleep(1000);
+                            bCodigo[i].setBackground(null);
+                            return true;
+                        }if(codigo.get(i) <= 9 && codigo.get(i) < 12){
+                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            Thread.sleep(1000);
+                            bCodigo[i].setBackground(null);
+                            return true;
+                        }
+                        return true;
+                    } catch (InterruptedException ex) {
+                    }
+                }
+            }//fin for
+            return false;
+        }
         
         public void juego (int segundos){
             Timer timer = new Timer();
             
             //tarea
             TimerTask tarea = new TimerTask() {
+                int codigoJugado;
+                boolean marcoMal = false;
+                
                 @Override
                 public void run() {
+                    if(pulsoBien == false){
+                    }
                 }
             };//cierra el timer
         }
