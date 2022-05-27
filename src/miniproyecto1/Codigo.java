@@ -17,4 +17,5 @@ public class Codigo {
         arCodigo = aleatorio.nextInt(12);
         return arCodigo;
     }    
+    
 }
