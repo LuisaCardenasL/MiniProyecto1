@@ -6,6 +6,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -79,6 +83,12 @@ public class GUI extends JFrame {
         pCentro.add(pOeste);
         pCentro.add(pEste);
         
+        //escuchas
+        ManejaEvento evento = new ManejaEvento();
+        bInicio.addActionListener(evento);
+        bCodigo[11].addActionListener(evento);
+        
+        
         add(lNivel, BorderLayout.NORTH);
         add(pCentro,BorderLayout.CENTER);
         add(lEstado, BorderLayout.SOUTH);
@@ -91,6 +101,41 @@ public class GUI extends JFrame {
         GUI obj = new GUI();
     }
     
+    public void limpiarGUI (){
+    }
     
+    class ManejaEvento implements ActionListener{
+        int puntos, codigo;
+        boolean pulsoBien;
+        
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == bInicio){
+                puntos = 0;
+                codigo = 11;
+                
+                //desactivar boton iniciar
+                bInicio.setEnabled(false);
+                
+                //iniciar juego
+                juego(2);
+            } if (e.getSource() == bCodigo){
+                pulsoBien = false;
+                String oprimido = e.getActionCommand();
+            }
+        } //fin actionPerformed
+        
+        public void juego (int segundos){
+            Timer timer = new Timer();
+            
+            //tarea
+            TimerTask tarea = new TimerTask() {
+                @Override
+                public void run() {
+                }
+            };//cierra el timer
+        }
+    }
     
 }
