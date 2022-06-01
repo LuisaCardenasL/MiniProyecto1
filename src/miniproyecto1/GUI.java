@@ -33,6 +33,7 @@ public class GUI extends JFrame {
     public GUI()
     {
         initComponents();
+        codigo = new ArrayList<>();
         //contruccion del frame
         setTitle("Juego Abrir Caja");
         setSize(600,300);
@@ -159,17 +160,17 @@ public class GUI extends JFrame {
                             bCodigo[i].setBackground(null);
                             return true;
                         }if(codigo.get(i) <= 3 && codigo.get(i) < 6){
-                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            bCodigo[i].setBackground(new Color (250, 219, 216));
                             Thread.sleep(1000);
                             bCodigo[i].setBackground(null);
                             return true;
                         }if(codigo.get(i) <= 6 && codigo.get(i) < 9){
-                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            bCodigo[i].setBackground(new Color (252, 243, 207));
                             Thread.sleep(1000);
                             bCodigo[i].setBackground(null);
                             return true;
                         }if(codigo.get(i) <= 9 && codigo.get(i) < 12){
-                            bCodigo[i].setBackground(new Color (174, 214, 241));
+                            bCodigo[i].setBackground(new Color (213, 245, 227));
                             Thread.sleep(1000);
                             bCodigo[i].setBackground(null);
                             return true;
