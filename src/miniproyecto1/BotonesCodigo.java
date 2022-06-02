@@ -18,5 +18,7 @@ public class BotonesCodigo extends JButton{
         this.idBoton = idBoton;
     }
     
-    
+    public int getID(){
+        return idBoton;
+    }
 }
