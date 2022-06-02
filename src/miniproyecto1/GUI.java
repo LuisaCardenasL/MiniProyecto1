@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -39,7 +40,7 @@ public class GUI extends JFrame {
         jugadaUsuario = new ArrayList<>();
         //contruccion del frame
         setTitle("Juego Abrir Caja");
-        setSize(600,300);
+        setSize(700,400);
         setResizable(false);
         setVisible(true);
         setLocationRelativeTo(null);
@@ -70,19 +71,18 @@ public class GUI extends JFrame {
             pBotones.add(bCodigo[i]);
             
             if ( 0<=i && i<3){
-                bCodigo[i].setBackground(new Color(93, 173, 226));
+                bCodigo[i].setBackground(new Color(69, 90, 100));
             }
             if ( 3<=i && i<6){
-                bCodigo[i].setBackground(new Color(231, 76, 60));
+                bCodigo[i].setBackground(new Color(40, 116, 166));
             }
             if ( 6<=i && i<9){
-                bCodigo[i].setBackground(new Color(241, 196, 15));
+                bCodigo[i].setBackground(new Color(155, 89, 182));
             }
             if ( 9<=i && i<12){
-                bCodigo[i].setBackground(new Color(39, 174, 96));
+                bCodigo[i].setBackground(new Color(236, 64, 122));
             }
         }
-        
         
         pBotonInicio.add(bInicio);
         
@@ -103,7 +103,6 @@ public class GUI extends JFrame {
         bInicio.addActionListener(evento);
         bCodigo[11].addActionListener(evento);
         
-        
         add(lNivel, BorderLayout.NORTH);
         add(pCentro,BorderLayout.CENTER);
         add(lEstado, BorderLayout.SOUTH);
@@ -119,10 +118,12 @@ public class GUI extends JFrame {
     public void limpiarGUI (){
         codigoJugadaPc.clear();
         jugadaUsuario.clear();
+        tfPuntos.setText("");
+        lNivel.setText("");
     }
     
     class ManejaEvento implements ActionListener{
-        int puntos, topeCodigo, bandera, aux, contadorJugadaPc, nivel = 5;
+        int puntos = 0, topeCodigo = 0, bandera = 0, aux, contadorJugadaPc = 0, rondasNivel = 5;
         boolean pulsoBien;
         
 
@@ -140,12 +141,53 @@ public class GUI extends JFrame {
                 jugadaUsuario.add(botonOprimido);
                 
                 //if si las jugadas estan dentro de las del nivel,  nivel <=
-                //else si ya llego al tope, ya hizo las 5 jugadas del nivel, entonces pasa siguiente nivel, //borrar jugadas usuario y no borrar las del pc, y nivel +5
+                if(bandera <= rondasNivel){
                     if(codigoJugadaPc.size() == jugadaUsuario.size()){
                         //hacer la validacion de los arreglos posicion a posicion
+                        if(codigoJugadaPc.equals(jugadaUsuario)==true){
                             //y si cumplio: +100 puntos, borra jugadaUsuario, y llamar metodo jugar
+                            
+                            try {
+                                puntos +=100;
+                                tfPuntos.setText(""+puntos);
+                                lEstado.setText("Muy bien sigue así");
+                                jugadaUsuario.clear();
+                                juego(2);
+                                bandera++;
+                                lImagen = new JLabel(new ImageIcon("src/imagenes/gif.gif"));
+                                Thread.sleep(1000);
+                                lImagen = new JLabel(new ImageIcon("src/imagenes/cajaFuerte.png"));
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else{
                             //else : oprimio el que no era reiniar todas las variables
-                    }  
+                            JOptionPane.showMessageDialog(null, "Perdiste :(");
+                            limpiarGUI();
+                            bInicio.setEnabled(true);
+                        }  
+                    } //else si ya llego al tope, ya hizo las 5 jugadas del nivel, entonces pasa siguiente nivel, //borrar jugadas usuario y no borrar las del pc, y nivel +5 
+                } else {
+                    rondasNivel ++;
+                    lNivel.setText("Nivel: "+1);
+                    puntos += 1000;
+                    jugadaUsuario.clear();
+                    if(codigoJugadaPc.size() == jugadaUsuario.size()){
+                        //hacer la validacion de los arreglos posicion a posicion
+                        if(codigoJugadaPc.equals(jugadaUsuario)==true){
+                            //y si cumplio: +100 puntos, borra jugadaUsuario, y llamar metodo jugar
+                            puntos +=100;
+                            tfPuntos.setText(""+puntos);
+                            jugadaUsuario.clear();
+                            juego(2);
+                            bandera++;
+                        } else{
+                            //else : oprimio el que no era reiniar todas las variables
+                            JOptionPane.showMessageDialog(null, "Perdiste :(");
+                            limpiarGUI();
+                        }  
+                    } 
+                } 
               
             /*if (e.getSource() == bCodigo){
                 pulsoBien = false;
@@ -163,6 +205,7 @@ public class GUI extends JFrame {
             }
         } //fin actionPerformed
         
+        /*
         public boolean validarJugada (int codigoJugado){
             for (int i = 0; i < codigoJugadaPc.size(); i++){
                 if (codigoJugadaPc.get(i) == codigoJugado){
@@ -194,7 +237,7 @@ public class GUI extends JFrame {
                 }
             }//fin for
             return false;
-        }
+        }*/
         
         public void juego (int segundos){
             Timer timer = new Timer();
@@ -205,42 +248,43 @@ public class GUI extends JFrame {
                 @Override
                 public void run() {
                     puntos = 0;
-                    topeCodigo = 11;
+                    //topeCodigo = 11;
                 
-                    int aleatorio = (int)(Math.random()*topeCodigo);
+                    int aleatorio = (int)(Math.random()*11);
                     codigoJugadaPc.add(aleatorio);
                     contadorJugadaPc++;
+                    System.out.println(codigoJugadaPc);
                     
                     for (int i = 0; i< codigoJugadaPc.size(); i++){
                         if(i >= 0 && i < 3){
                             try {
-                                bCodigo[i].setBackground(new Color (174, 214, 241));
+                                bCodigo[i].setBackground(new Color (176, 190, 197));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(new Color(93, 173, 226));
+                                bCodigo[i].setBackground(new Color(69, 90, 100));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }if(i >= 3 && i < 6){
                             try {
-                                bCodigo[i].setBackground(new Color (250, 219, 216));
+                                bCodigo[i].setBackground(new Color (133, 193, 233));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(null);
+                                bCodigo[i].setBackground(new Color(40, 116, 166));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }if(i >= 6 && i < 9){
                             try {
-                                bCodigo[i].setBackground(new Color (252, 243, 207));
+                                bCodigo[i].setBackground(new Color (215, 189, 226));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(null);
+                                bCodigo[i].setBackground(new Color(155, 89, 182));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }if(i >= 9 && i < 12){
                             try {
-                                bCodigo[i].setBackground(new Color (213, 245, 227));
+                                bCodigo[i].setBackground(new Color (248, 187, 208));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(null);
+                                bCodigo[i].setBackground(new Color(236, 64, 122));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -248,7 +292,7 @@ public class GUI extends JFrame {
                     }
                 }
             };//cierra el timer
-            timer.schedule(tarea,10 );
+            timer.schedule(tarea,10);
         }
     }
     
