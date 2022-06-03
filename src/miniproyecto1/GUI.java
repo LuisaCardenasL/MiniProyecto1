@@ -20,10 +20,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
- *
- * @author invitado
+ * 
+ * @author Luisa Maria Cardenas Lopez - 1823494
+ * @author Alejandro Tapiero Triana - 202043737
  */
 public class GUI extends JFrame {
     private JButton bInicio;
@@ -51,8 +53,8 @@ public class GUI extends JFrame {
         bInicio = new JButton("Iniciar");
         bCodigo = new BotonesCodigo[12];
         
-        lEstado = new JLabel("estado aqui");
-        lNivel = new JLabel("nivel aqui");
+        lEstado = new JLabel("");
+        lNivel = new JLabel("");
         lPuntuacion = new JLabel("Puntuacion: ");
         lImagen = new JLabel(new ImageIcon("src/imagenes/cajaFuerte.png"));
         
@@ -101,7 +103,9 @@ public class GUI extends JFrame {
         //escuchas
         ManejaEvento evento = new ManejaEvento();
         bInicio.addActionListener(evento);
-        bCodigo[11].addActionListener(evento);
+        for(int i = 0; i<bCodigo.length; i++){
+            bCodigo[i].addActionListener(evento);
+        }
         
         add(lNivel, BorderLayout.NORTH);
         add(pCentro,BorderLayout.CENTER);
@@ -115,15 +119,22 @@ public class GUI extends JFrame {
         GUI obj = new GUI();
     }
     
+    /**
+     * Metodo para limpiar la GUI y dejarla como se encontraba inicialmente antes de jugar
+     */
     public void limpiarGUI (){
         codigoJugadaPc.clear();
         jugadaUsuario.clear();
         tfPuntos.setText("");
         lNivel.setText("");
+        lEstado.setText("");
     }
     
+    /**
+     * Clase manejadora de los eventos de la ventana
+     */
     class ManejaEvento implements ActionListener{
-        int puntos = 0, topeCodigo = 0, bandera = 0, aux, contadorJugadaPc = 0, rondasNivel = 5;
+        int puntos = 0, topeCodigo = 0, bandera = 0, nivel=1, contadorJugadaPc = 0, rondasNivel = 5;
         boolean pulsoBien;
         
 
@@ -141,104 +152,65 @@ public class GUI extends JFrame {
                 jugadaUsuario.add(botonOprimido);
                 
                 //if si las jugadas estan dentro de las del nivel,  nivel <=
-                if(bandera <= rondasNivel){
+                if(bandera < rondasNivel){
+                    lNivel.setText("Nivel: "+nivel);
                     if(codigoJugadaPc.size() == jugadaUsuario.size()){
                         //hacer la validacion de los arreglos posicion a posicion
                         if(codigoJugadaPc.equals(jugadaUsuario)==true){
                             //y si cumplio: +100 puntos, borra jugadaUsuario, y llamar metodo jugar
                             
-                            try {
-                                puntos +=100;
-                                tfPuntos.setText(""+puntos);
-                                lEstado.setText("Muy bien sigue así");
-                                jugadaUsuario.clear();
-                                juego(2);
                                 bandera++;
-                                lImagen = new JLabel(new ImageIcon("src/imagenes/gif.gif"));
-                                Thread.sleep(1000);
-                                lImagen = new JLabel(new ImageIcon("src/imagenes/cajaFuerte.png"));
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                                lNivel.setText("Nivel: "+nivel);
+                                lEstado.setText("Muy bien sigue así, recuerda que el codigo tiene una longitud de "+(contadorJugadaPc+1)+" botones");
+                                jugadaUsuario.clear();
+                                puntos += 100;
+                                tfPuntos.setText(""+puntos);
+                                lImagen.setIcon(new ImageIcon("src/imagenes/gif.gif"));
+                                Timer ponerImagen = new Timer();
+                                TimerTask imagen = new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        lImagen.setIcon(new ImageIcon("src/imagenes/cajaFuerte.png"));
+                                    }
+                                        
+                                };//cierra timer imagen
+                                
+                                ponerImagen.schedule(imagen, 250);
+                                juego(2);
+                            
                         } else{
                             //else : oprimio el que no era reiniar todas las variables
-                            JOptionPane.showMessageDialog(null, "Perdiste :(");
+                            JOptionPane.showMessageDialog(null, "Perdiste :(" +
+                                                          "\nTus puntos obtenidos fueron: "+puntos+
+                                                          "\nNivel alcanzado: "+ nivel +
+                                                          "\nLas cantidad de rondas que acertaste fueron: " + (contadorJugadaPc-1));
                             limpiarGUI();
+                            bandera=0;
+                            puntos = 0;
+                            nivel=1; 
+                            contadorJugadaPc = 0; 
+                            rondasNivel = 5;
                             bInicio.setEnabled(true);
                         }  
                     } //else si ya llego al tope, ya hizo las 5 jugadas del nivel, entonces pasa siguiente nivel, //borrar jugadas usuario y no borrar las del pc, y nivel +5 
-                } else {
-                    rondasNivel ++;
-                    lNivel.setText("Nivel: "+1);
+                } else if(bandera == rondasNivel){
+                    nivel ++;
+                    lNivel.setText("Nivel: "+nivel);
+                    JOptionPane.showMessageDialog(null, "Pasaste al nivel: "+nivel);
                     puntos += 1000;
-                    jugadaUsuario.clear();
-                    if(codigoJugadaPc.size() == jugadaUsuario.size()){
-                        //hacer la validacion de los arreglos posicion a posicion
-                        if(codigoJugadaPc.equals(jugadaUsuario)==true){
-                            //y si cumplio: +100 puntos, borra jugadaUsuario, y llamar metodo jugar
-                            puntos +=100;
-                            tfPuntos.setText(""+puntos);
-                            jugadaUsuario.clear();
-                            juego(2);
-                            bandera++;
-                        } else{
-                            //else : oprimio el que no era reiniar todas las variables
-                            JOptionPane.showMessageDialog(null, "Perdiste :(");
-                            limpiarGUI();
-                        }  
-                    } 
-                } 
-              
-            /*if (e.getSource() == bCodigo){
-                pulsoBien = false;
-                String oprimido = e.getActionCommand();
-                for (int i = 0; i < bCodigo.length; i++){
-                    if (oprimido.equals(bCodigo[i].getText())){
-                        pulsoBien = true;
-                        break;
-                    }
-                }
-                if(pulsoBien){
-                    puntos += 100;
                     tfPuntos.setText(""+puntos);
-                }}*/
+                    
+                    jugadaUsuario.clear();
+                    bandera = 0;
+                }
             }
         } //fin actionPerformed
         
-        /*
-        public boolean validarJugada (int codigoJugado){
-            for (int i = 0; i < codigoJugadaPc.size(); i++){
-                if (codigoJugadaPc.get(i) == codigoJugado){
-                    try {
-                        if(codigoJugadaPc.get(i) <= 0 && codigoJugadaPc.get(i) < 3){
-                            bCodigo[i].setBackground(new Color (174, 214, 241));
-                            Thread.sleep(1000);
-                            bCodigo[i].setBackground(null);
-                            return true;
-                        }if(codigoJugadaPc.get(i) <= 3 && codigoJugadaPc.get(i) < 6){
-                            bCodigo[i].setBackground(new Color (250, 219, 216));
-                            Thread.sleep(1000);
-                            bCodigo[i].setBackground(null);
-                            return true;
-                        }if(codigoJugadaPc.get(i) <= 6 && codigoJugadaPc.get(i) < 9){
-                            bCodigo[i].setBackground(new Color (252, 243, 207));
-                            Thread.sleep(1000);
-                            bCodigo[i].setBackground(null);
-                            return true;
-                        }if(codigoJugadaPc.get(i) <= 9 && codigoJugadaPc.get(i) < 12){
-                            bCodigo[i].setBackground(new Color (213, 245, 227));
-                            Thread.sleep(1000);
-                            bCodigo[i].setBackground(null);
-                            return true;
-                        }
-                        return true;
-                    } catch (InterruptedException ex) {
-                    }
-                }
-            }//fin for
-            return false;
-        }*/
-        
+        /**
+         * Metodo para realizar el funcionamiento del juego de la pc
+         * crea el codigo para el juego e ilumina los codigos
+         * @param segundos 
+         */
         public void juego (int segundos){
             Timer timer = new Timer();
             
@@ -247,44 +219,43 @@ public class GUI extends JFrame {
                 
                 @Override
                 public void run() {
-                    puntos = 0;
-                    //topeCodigo = 11;
+                    topeCodigo = 11;
                 
-                    int aleatorio = (int)(Math.random()*11);
+                    int aleatorio = (int)(Math.random()*0);
                     codigoJugadaPc.add(aleatorio);
                     contadorJugadaPc++;
                     System.out.println(codigoJugadaPc);
                     
                     for (int i = 0; i< codigoJugadaPc.size(); i++){
-                        if(i >= 0 && i < 3){
+                        if(codigoJugadaPc.get(i) >= 0 && codigoJugadaPc.get(i) < 3){
                             try {
-                                bCodigo[i].setBackground(new Color (176, 190, 197));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color (176, 190, 197));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(new Color(69, 90, 100));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color(69, 90, 100));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        }if(i >= 3 && i < 6){
+                        }if(codigoJugadaPc.get(i) >= 3 && codigoJugadaPc.get(i) < 6){
                             try {
-                                bCodigo[i].setBackground(new Color (133, 193, 233));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color (133, 193, 233));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(new Color(40, 116, 166));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color(40, 116, 166));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        }if(i >= 6 && i < 9){
+                        }if(codigoJugadaPc.get(i) >= 6 && codigoJugadaPc.get(i) < 9){
                             try {
-                                bCodigo[i].setBackground(new Color (215, 189, 226));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color (215, 189, 226));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(new Color(155, 89, 182));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color(155, 89, 182));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        }if(i >= 9 && i < 12){
+                        }if(codigoJugadaPc.get(i) >= 9 && codigoJugadaPc.get(i) < 12){
                             try {
-                                bCodigo[i].setBackground(new Color (248, 187, 208));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color (248, 187, 208));
                                 Thread.sleep(1000);
-                                bCodigo[i].setBackground(new Color(236, 64, 122));
+                                bCodigo[codigoJugadaPc.get(i)].setBackground(new Color(236, 64, 122));
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
