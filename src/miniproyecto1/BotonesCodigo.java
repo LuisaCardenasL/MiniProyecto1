@@ -4,12 +4,16 @@ import java.awt.Color;
 import javax.swing.JButton;
 
 /**
- * Clase de botones
- * @author invitado
+ * @author Luisa Maria Cardenas Lopez - 1823494 - cardenas.luisa@correounivalle.edu.co
+ * @author Alejandro Tapiero Triana - 202043737 - alejandro.tapiero@correounivalle.edu.co
  */
 public class BotonesCodigo extends JButton{
     private int idBoton;
     
+    /**
+     * Constructor de la clase
+     * @param idBoton 
+     */
     public BotonesCodigo(int idBoton){
         this.idBoton = idBoton;
     }

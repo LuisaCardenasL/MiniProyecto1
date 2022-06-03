@@ -24,8 +24,8 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
  * 
- * @author Luisa Maria Cardenas Lopez - 1823494
- * @author Alejandro Tapiero Triana - 202043737
+ * @author Luisa Maria Cardenas Lopez - 1823494 - cardenas.luisa@correounivalle.edu.co
+ * @author Alejandro Tapiero Triana - 202043737 - alejandro.tapiero@correounivalle.edu.co
  */
 public class GUI extends JFrame {
     private JButton bInicio;
@@ -35,6 +35,9 @@ public class GUI extends JFrame {
     private JTextField tfPuntos;
     private ArrayList<Integer> codigoJugadaPc, jugadaUsuario;
     
+    /**
+     * Constructor de la clase
+     */
     public GUI()
     {
         initComponents();
@@ -49,6 +52,7 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
+    //inicializar componentes
     private void initComponents(){
         bInicio = new JButton("Iniciar");
         bCodigo = new BotonesCodigo[12];
@@ -131,7 +135,7 @@ public class GUI extends JFrame {
     }
     
     /**
-     * Clase manejadora de los eventos de la ventana
+     * Clase manejadora de los escuchas
      */
     class ManejaEvento implements ActionListener{
         int puntos = 0, topeCodigo = 0, bandera = 0, nivel=1, contadorJugadaPc = 0, rondasNivel = 5;
@@ -151,14 +155,10 @@ public class GUI extends JFrame {
                 int botonOprimido = ((BotonesCodigo)e.getSource()).getID();
                 jugadaUsuario.add(botonOprimido);
                 
-                //if si las jugadas estan dentro de las del nivel,  nivel <=
                 if(bandera < rondasNivel){
                     lNivel.setText("Nivel: "+nivel);
                     if(codigoJugadaPc.size() == jugadaUsuario.size()){
-                        //hacer la validacion de los arreglos posicion a posicion
                         if(codigoJugadaPc.equals(jugadaUsuario)==true){
-                            //y si cumplio: +100 puntos, borra jugadaUsuario, y llamar metodo jugar
-                            
                                 bandera++;
                                 lNivel.setText("Nivel: "+nivel);
                                 lEstado.setText("Muy bien sigue así, recuerda que el codigo tiene una longitud de "+(contadorJugadaPc+1)+" botones");
@@ -172,14 +172,11 @@ public class GUI extends JFrame {
                                     public void run() {
                                         lImagen.setIcon(new ImageIcon("src/imagenes/cajaFuerte.png"));
                                     }
-                                        
                                 };//cierra timer imagen
-                                
                                 ponerImagen.schedule(imagen, 250);
                                 juego(2);
                             
                         } else{
-                            //else : oprimio el que no era reiniar todas las variables
                             JOptionPane.showMessageDialog(null, "Perdiste :(" +
                                                           "\nTus puntos obtenidos fueron: "+puntos+
                                                           "\nNivel alcanzado: "+ nivel +
@@ -192,14 +189,13 @@ public class GUI extends JFrame {
                             rondasNivel = 5;
                             bInicio.setEnabled(true);
                         }  
-                    } //else si ya llego al tope, ya hizo las 5 jugadas del nivel, entonces pasa siguiente nivel, //borrar jugadas usuario y no borrar las del pc, y nivel +5 
+                    }
                 } else if(bandera == rondasNivel){
                     nivel ++;
                     lNivel.setText("Nivel: "+nivel);
                     JOptionPane.showMessageDialog(null, "Pasaste al nivel: "+nivel);
                     puntos += 1000;
                     tfPuntos.setText(""+puntos);
-                    
                     jugadaUsuario.clear();
                     bandera = 0;
                 }
