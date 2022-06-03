@@ -221,7 +221,7 @@ public class GUI extends JFrame {
                 public void run() {
                     topeCodigo = 11;
                 
-                    int aleatorio = (int)(Math.random()*0);
+                    int aleatorio = (int)(Math.random()*topeCodigo);
                     codigoJugadaPc.add(aleatorio);
                     contadorJugadaPc++;
                     System.out.println(codigoJugadaPc);
